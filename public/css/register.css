@@ -1,0 +1,215 @@
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
+
+*{
+  margin: 0;
+  padding: 0;
+}
+
+html{
+  height: 100vh;
+  background: linear-gradient(-160deg,#f7d8c3, #e2b4a5);
+	/* background-size: 400% 400%;
+	animation: gradient 10s ease infinite; */
+
+}
+
+body{
+  font-family: 'Montserrat', sans-serif;
+  counter-reset: step;
+}
+
+#multistepsform{
+  width: 400px;
+  margin: 50px auto;
+  text-align: center;
+  position: relative;
+  text-overflow: hidden;
+}
+
+fieldset{
+  background: #fff;
+  border: 0 none;
+  border-radius: 5px;
+  padding: 30px 40x;
+  box-shadow: 0 0 12px 1px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+  width: 100%;
+  position: relative;
+}
+
+fieldset:not(:first-of-type){
+  display:none;
+}
+
+.fs-title{
+  font-size: 18px;
+  text-transform: uppercase;
+  color: #2c3e50;
+  margin: 10px 0;
+  padding-top: 20px;
+}
+
+.fs-subtitle{
+  font-weight: normal;
+  font-size: 12px;
+  /* color: #666; */
+  margin-bottom: 20px;  
+}
+input, textarea{
+  padding: 14px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  width: 80%;
+  box-sizing: border-box;
+  font-family: montserrat;
+  color: #2c3e50;
+  font-size: 13px;
+}
+
+#fname, #lname{
+  width: 40%;
+  display: inline-flex;
+}
+
+#password-span{
+  position: relative;
+}
+
+#hide-password{
+  position: absolute;
+  right: 12px;
+  top: 3px;
+  cursor: pointer;
+}
+
+#show-password{
+  display: none;
+  position: absolute;
+  right: 12px;
+  top: 3px;
+  cursor: pointer;
+}
+
+input:focus, textarea:focus{
+  border-color: #a0a0a0;
+  outline: none;
+  /* color: #637373; */
+}
+
+.action-button {
+  width: 100px;
+  background: #ff9a76;
+  font-weight: bold;
+  color: #fff;
+  transition: 150ms;
+  border: 0 none;
+  border-radius: 1px;
+  cursor: pointer;
+  padding: 10px 5px;
+  margin: 10px 5px;
+}
+
+.action-button:hover, .action-button:focus{
+  box-shadow: 0 0 8px 1px rgba(0, 0, 0, 0.2);
+  background: #ff9068;
+}
+
+.forgot-password{
+  margin: 10px 5px;
+  padding-bottom: 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.member-login{
+  padding-top: 20px;
+  font-size: 14px;
+}
+
+
+ul #progessbar{
+  display: table;
+}
+
+#progressbar li{
+  margin-top:20px;
+  display: inline-block;
+  margin-bottom: 30px;
+  font-size: 13px;
+  overflow: hidden;
+  padding: 0 12px 0 12px;
+  color: #344646;
+
+}
+
+li:before{
+  
+  counter-increment: step;
+  content: counter(step);
+  display: block;
+  width: 25px;
+  line-height: 25px;
+  font-size: 10px;
+  border-radius:50px;
+  color: #fff;
+  background: #3e8b8b;
+  margin: auto;
+  margin-bottom: 5px;
+}
+
+li:after{
+  content: "";
+  width: 65%;
+  height: 1.5px;
+  background: #3e8b8b;
+  position: absolute;
+  right:65px;
+  top: 30px;
+  z-index: -1;
+}
+
+#progressbar li.active{
+  color: #ff9068;
+}
+
+#progressbar li.active:before, li.active:after{
+  background: #ff9068;
+  color: #fff;
+}
+
+.next-animation{
+  animation: next 0.2s ease-in;
+  animation-fill-mode: both;
+}
+
+
+@keyframes next{
+  from{
+    transform: translate(15px);
+  }
+  to{
+    transform: translate(0px);
+  }
+}
+
+
+/* 
+@keyframes gradient{
+  0% {
+    background-position: 25% 50%;
+  }
+  25%{
+    background-position: 50% 75%;
+  }
+	50% {
+		background-position: 75% 100%;
+  }
+  75%{
+    background-position: 100% 75%;
+  }
+	100% {
+		background-position: 75% 25%;
+	}
+} */
+

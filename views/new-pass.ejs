@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>HopeGivers</title>
+  <link rel="stylesheet" type="text/css" href="css/register.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
+</head>
+
+<body>
+
+  <!-- multistep form -->
+  <form action="/new-pass" method="POST" id="multistepsform">
+    <!-- progressbar -->
+
+    <!-- fieldsets -->
+    <fieldset>
+      <h2 class="fs-title">Enter New Password</h2>
+      <h3 class="fs-subtitle"></h3>
+      <span id="password-span">
+        <input type="password" id="password" name="password" placeholder="Password" />
+        <i id="hide-password" class="far fa-eye-slash toggle-password"></i>
+        <i id="show-password" class="far fa-eye toggle-password"></i>
+      </span>
+      <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" />
+      <p style="display: none; color:crimson;" class="alertMsg">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>Entered Passwords must be same </span>
+      </p>
+      <p class="password_same"> <% if(Password_Same){%>
+        <%=Password_Same%>
+        <%}%></p>
+      <input type="submit" name="submit" class="submit action-button" value="Submit" />
+    </fieldset>
+
+
+    <p class="member-login">
+      Already a member? <a href="login">Sign in</a>
+    </p>
+  </form>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+  <script>
+
+    let current_field, next_field, prev_field, password, confirm_password;
+
+    password = document.getElementById("password");
+    confirm_password = document.getElementById("confirm_password");
+
+    $('.toggle-password').on('click', function (e) {
+      if (password.type === 'password') {
+        console.log('Password type is text');
+        password.type = 'text';
+        confirm_password.type = 'text';
+        $('#hide-password').hide();
+        $('#show-password').show();
+      }
+      else {
+        password.type = 'password';
+        confirm_password.type = 'password';
+        $('#hide-password').show();
+        $('#show-password').hide();
+      }
+    });
+
+    $('.next').on('click', function () {
+      if (password.value != confirm_password.value) {
+        console.log('password do not match');
+        $('.alertMsg').show();
+      }
+      else {
+        $('.alertMsg').hide();
+        current_field = $(this).parent();
+        next_field = $(this).parent().next();
+        console.log(current_field);
+        console.log(next_field);
+
+        $('#progressbar li').eq($('fieldset').index(next_field)).addClass('active');
+        next_field.show().addClass('next-animation');
+        current_field.hide();
+
+      }
+    });
+
+    $('.previous').on('click', function (e) {
+      current_field = $(this).parent();
+      prev_field = $(this).parent().prev();
+      // console.log(current_field);
+      // console.log(prev_field);
+
+      $('#progressbar li').eq($('fieldset').index(current_field)).removeClass('active');
+      prev_field.show();
+      current_field.hide();
+
+    });
+
+
+  </script>
+</body>
+
+</html>

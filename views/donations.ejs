@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Donation</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- <link rel="stylesheet" type="text/css" href="donations.css"> -->
+
+  <style type="text/css">
+    nav>.nav.nav-tabs {
+
+      border: none;
+      color: #fff;
+      background: #272e38;
+      border-radius: 0;
+
+    }
+
+    nav>div a.nav-item.nav-link,
+    nav>div a.nav-item.nav-link.active {
+      border: none;
+      padding: 18px 25px;
+      color: #fff;
+      background: #272e38;
+      border-radius: 0;
+    }
+
+    nav>div a.nav-item.nav-link.active:after {
+      content: "";
+      position: relative;
+      bottom: -60px;
+      left: -10%;
+      border: 15px solid transparent;
+      border-top-color: #e74c3c;
+    }
+
+    .tab-content {
+      background: #fdfdfd;
+      line-height: 25px;
+      border: 1px solid #ddd;
+      border-top: 5px solid #e74c3c;
+      border-bottom: 5px solid #e74c3c;
+      padding: 30px 25px;
+    }
+
+    nav>div a.nav-item.nav-link:hover,
+    nav>div a.nav-item.nav-link:focus {
+      border: none;
+      background: #e74c3c;
+      color: #fff;
+      border-radius: 0;
+      transition: background 0.20s linear;
+    }
+  </style>
+
+</head>
+
+<body>
+  <%- include ('./partials/loader') -%>
+  <%- include ('./partials/header') %>
+
+
+  <div class="jumbotron text-light" style="background-color: #34317A;">
+    <div class="text-center">
+      <h1 style="text-transform:uppercase;">Donate</h1>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1 style="text-transform:uppercase; font-size: 35px; text-align:center">WE NEED YOUR HELP TO HELP OTHERS</h1>
+
+
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 ">
+          <nav>
+            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+              <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#donateMoney" role="tab"
+                aria-controls="nav-home" aria-selected="true">Donate Money</a>
+              <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#donateClothes" role="tab"
+                aria-controls="nav-profile" aria-selected="false">Donate Clothes</a>
+            </div>
+          </nav>
+          <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="donateMoney" role="tabpanel" aria-labelledby="nav-home-tab">
+              <center>
+                <h3>Donate Money</h3>
+              </center>
+              <form action="#" method="post">
+                <div class="container pt-5">
+                  <label style=" font-size: 20px;" for="amount" class="font-weight-bold ml-3">Amount:</label>
+                  <div style="margin-left: 5em;" class="d-inline-flex col-6">
+                    <input type="text" name="amount" class="form-control" placeholder="Enter the Amount to donate"
+                      required>
+                  </div>
+                  <br>
+                  <div class="my-4">
+                    <textarea class="form-control" placeholder="Message" cols="8" , rows="8"></textarea>
+                  </div>
+                  <center><button type="submit" class="btn btn-danger p-md-3">DONATE NOW</button></center>
+                </div>
+              </form>
+            </div>
+            <div class="tab-pane fade" id="donateClothes" role="tabpanel" aria-labelledby="nav-profile-tab">
+              <center>
+                <h3>Donate Clothes</h3>
+              </center>
+              <form action="#" method="post">
+                <div class="container pt-5">
+                  <label style=" font-size: 20px;" for="amount" class="font-weight-bold ml-3">Cloth Type:</label>
+                  <div style="margin-left: 5em;" class="d-inline-flex col-6">
+                    <input type="text" name="type" class="form-control" placeholder="Eg:Shirts, Pants, Dresses etc."
+                      required>
+                  </div>
+                  <br>
+                  <label style=" font-size: 20px;" for="amount" class="font-weight-bold ml-3">Cloth Gender:</label>
+                  <div style="margin-left: 5em;" class="d-inline-flex col-6">
+                    <div class="radio">
+                      <input type="radio" id="male" value="male" name="gender" required>
+                      <label for="male">Male</label>
+
+                      <input type="radio" id="female" value="female" name="gender" required>
+                      <label for="female">Female</label>
+
+                      <input type="radio" id="both" value="both" name="gender" required>
+                      <label for="others">Both</label>
+                    </div>
+                  </div>
+                  <br>
+                  <div class="my-4">
+                    <textarea class="form-control" placeholder="Message" cols="8" , rows="8"></textarea>
+                  </div>
+                  <center><button type="submit" class="btn btn-danger p-md-3">DONATE NOW</button></center>
+                </div>
+              </form>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pb-5"></div>
+  </div>
+  <%- include ('./partials/footer') -%>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+
+</html>
