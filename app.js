@@ -53,7 +53,7 @@ app.use(session({
     cookie: { secure: true }
 }));
 
-let random = Math.floor(Math.pow(Math.random(),3)*100000000);
+let random = Math.floor(Math.pow(Math.random(), 3) * 100000000);
 // console.log(random);
 
 mongoose.connect("mongodb://localhost:27017/hopegivers", { useNewUrlParser: true, useUnifiedTopology: true });
@@ -122,7 +122,7 @@ app.post("/login", function (req, res) {
                         //   res.locals.email = req.session.email;
                         //   next();
                         // });
-                        res.render('about',{Admin_email:admin_email});
+                        res.render('about', { Admin_email: admin_email });
                         console.log(req.session.email);
                     }
                     else {
@@ -147,22 +147,22 @@ app.post("/forget-pass", function (req, res) {
         }
         else {
             if (foundUser) {
-                
+
                 const msg = {
-                  to: email, // Change to your recipient
-                  from: admin_email, // Change to your verified sender
-                  subject: 'Email Verification for Password Retrieval;',
-                  text: 'Team Hopegivers',
-                  html: '<strong>Click on the link given below to change your password</strong><br><p>http://localhost:3000/new-pass/'+random+'</p>',
+                    to: email, // Change to your recipient
+                    from: admin_email, // Change to your verified sender
+                    subject: 'Email Verification for Password Retrieval;',
+                    text: 'Team Hopegivers',
+                    html: '<strong>Click on the link given below to change your password</strong><br><p>http://localhost:3000/new-pass/' + random + '</p>',
                 }
                 sgMail
-                  .send(msg)
-                  .then(() => {
-                    console.log('Email sent')
-                  })
-                  .catch((error) => {
-                    console.error(error)
-                  })
+                    .send(msg)
+                    .then(() => {
+                        console.log('Email sent')
+                    })
+                    .catch((error) => {
+                        console.error(error)
+                    })
 
                 obj.email_id = email;
                 obj.random_no = random;
@@ -170,7 +170,7 @@ app.post("/forget-pass", function (req, res) {
 
                 res.render('email-sent');
             }
-            else{
+            else {
                 console.log("No Such User");
             }
         }
@@ -182,37 +182,31 @@ app.post("/forget-pass", function (req, res) {
 app.get("/new-pass/:random", function (req, res) {
     let random_forgot_pass = req.params.random;
     // console.log(obj);
-    if(obj.random_no == random_forgot_pass)
-    {
+    if (obj.random_no == random_forgot_pass) {
         console.log(random);
-        res.redirect("/new-pass");    
+        res.redirect("/new-pass");
     }
-    else
-    {
+    else {
         res.redirect("/");
     }
 })
 
 app.post("/new-pass", function (req, res) {
     let new_password = md5(req.body.password);
-    if(obj.email_id)
-    {
-        let password_is_same = User.findOne({email:obj.email_id},{password:new_password});
-        if(password_is_same)
-        {
+    if (obj.email_id) {
+        let password_is_same = User.findOne({ email: obj.email_id }, { password: new_password });
+        if (password_is_same) {
             console.log('Password same hai bhai');
-            res.render('new-pass',{Password_Same:password_is_same});
+            res.render('new-pass', { Password_Same: password_is_same });
         }
-        else
-        {
-            User.updateOne({email:obj.email_id},{password:new_password},function (err){
-            if (err) {
-                console.log(err);
-            }
-            else
-            {
-                res.redirect('/login');
-            }
+        else {
+            User.updateOne({ email: obj.email_id }, { password: new_password }, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    res.redirect('/login');
+                }
             }
             )
         }
@@ -229,12 +223,14 @@ app.get("/donations", function (req, res) {
 
 });
 
-// rs
-
 
 app.get("/logout", function (req, res) {
     req.logout();
     res.redirect("/");
+});
+
+app.use(function (req, res, next) {
+    next(createError(404));
 });
 
 app.listen(3000, function () {
