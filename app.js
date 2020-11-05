@@ -9,6 +9,8 @@ const session = require('express-session');
 // const passportLocalMongoose = require("passport-local-mongoose");
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_API);
 
 // Routing 
 const homeRoutes = require('./routes/home');
@@ -122,12 +124,12 @@ app.post("/login", function (req, res) {
                         //   res.locals.email = req.session.email;
                         //   next();
                         // });
-                        res.render('about', { Admin_email: admin_email });
-                        console.log(req.session.email);
+                        res.render('about');
                     }
                     else {
-                        res.redirect('donations');
+                        res.render('donations');
                     }
+                    console.log(req.session.email);
                 }
                 else {
                     console.log('Wrong password');
@@ -135,6 +137,29 @@ app.post("/login", function (req, res) {
             }
         }
     })
+});
+
+app.post('/donations', async (req, res, next) => {
+    // TO ADD: data validation, storing errors in an `errors` variable!
+    const name = req.body.name;
+    const email = req.session.email;
+    const amount = req.body.amount;
+    if (true) { // Data is valid!
+        try {
+            // Create a PI:
+            const stripe = require('stripe')(process.env.STRIPE_API);
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount * 100, // In cents
+                currency: 'usd',
+                receipt_email: email,
+            });
+            res.render('card', { name: name, amount: amount, intentSecret: paymentIntent.client_secret });
+        } catch (err) {
+            console.log('Error! ', err.message);
+        }
+    } else {
+        res.render('donations');
+    }
 });
 
 app.post("/forget-pass", function (req, res) {

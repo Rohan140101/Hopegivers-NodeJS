@@ -70,10 +70,9 @@
     </div>
   </div>
 
+
   <div class="container">
     <h1 style="text-transform:uppercase; font-size: 35px; text-align:center">WE NEED YOUR HELP TO HELP OTHERS</h1>
-
-
 
     <div class="container">
       <div class="row">
@@ -93,6 +92,7 @@
               </center>
               <form action="#" method="post">
                 <div class="container pt-5">
+                  <input type="text" name="name" placeholder="Name on Card" />
                   <label style=" font-size: 20px;" for="amount" class="font-weight-bold ml-3">Amount:</label>
                   <div style="margin-left: 5em;" class="d-inline-flex col-6">
                     <input type="text" name="amount" class="form-control" placeholder="Enter the Amount to donate"
@@ -102,7 +102,9 @@
                   <div class="my-4">
                     <textarea class="form-control" placeholder="Message" cols="8" , rows="8"></textarea>
                   </div>
-                  <center><button type="submit" class="btn btn-danger p-md-3">DONATE NOW</button></center>
+                  <center>
+                    <button id="donate-btn" type="submit" class="btn btn-danger p-md-3">DONATE NOW</button>
+                  </center>
                 </div>
               </form>
             </div>
