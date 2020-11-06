@@ -5,8 +5,8 @@ const ejs = require("ejs");
 const mongoose = require("mongoose");
 const md5 = require('md5');
 const session = require('express-session');
-// const passport = require("passport");
-// const passportLocalMongoose = require("passport-local-mongoose");
+const passport = require("passport");
+const passportLocalMongoose = require("passport-local-mongoose");
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const Stripe = require('stripe');
@@ -22,7 +22,6 @@ const missionsRoutes = require('./routes/missions');
 const pastHistoryRoutes = require('./routes/past-history');
 const loginRoutes = require('./routes/login');
 const registerRoutes = require('./routes/register');
-// const router = require('./routes/home');
 const forgetPassRoutes = require('./routes/forget-pass');
 const newPassRoutes = require('./routes/new-pass');
 
@@ -110,6 +109,7 @@ app.post("/login", function (req, res) {
     const email = req.body.email;
     const password = md5(req.body.password);
     req.session.email = email;
+    res.locals.email = email;
 
     User.findOne({ email: email }, function (err, foundUser) {
         if (err) {
@@ -127,11 +127,13 @@ app.post("/login", function (req, res) {
                         res.render('about');
                     }
                     else {
+
                         res.render('donations');
                     }
-                    console.log(req.session.email);
                 }
                 else {
+                    req.session.reset();
+                    res.redirect('/login');
                     console.log('Wrong password');
                 }
             }
@@ -139,28 +141,8 @@ app.post("/login", function (req, res) {
     })
 });
 
-app.post('/donations', async (req, res, next) => {
-    // TO ADD: data validation, storing errors in an `errors` variable!
-    const name = req.body.name;
-    const email = req.session.email;
-    const amount = req.body.amount;
-    if (true) { // Data is valid!
-        try {
-            // Create a PI:
-            const stripe = require('stripe')(process.env.STRIPE_API);
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount: amount * 100, // In cents
-                currency: 'usd',
-                receipt_email: email,
-            });
-            res.render('card', { name: name, amount: amount, intentSecret: paymentIntent.client_secret });
-        } catch (err) {
-            console.log('Error! ', err.message);
-        }
-    } else {
-        res.render('donations');
-    }
-});
+
+
 
 app.post("/forget-pass", function (req, res) {
 
@@ -241,14 +223,13 @@ app.post("/new-pass", function (req, res) {
 
 app.get("/donations", function (req, res) {
     if (req.isAuthenticated()) {
-        res.render("submit");
+        res.render("donations");
     } else {
         res.redirect("/login");
     }
 
 });
 
-// rs
 
 
 app.get("/logout", function (req, res) {
