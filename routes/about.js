@@ -1,11 +1,11 @@
-const express = require('express');
-const router = express.Router();
+// const express = require('express');
+// const router = express.Router();
 
-router.get("/about", function (req, res) {
-    res.render("about");
-});
+// router.get("/about", function (req, res) {
+//     res.render("about", { myAccount: userLogin });
+// });
 
 
-module.exports = router;
+// module.exports = router;
 
 

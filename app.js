@@ -11,14 +11,15 @@ const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_API);
+const cookieParser = require('cookie-parser');
 
 // Routing 
-const homeRoutes = require('./routes/home');
-const aboutRoutes = require('./routes/about');
-const contactRoutes = require('./routes/contact');
-const donationsRoutes = require('./routes/donations');
-const galleryRoutes = require('./routes/gallery');
-const missionsRoutes = require('./routes/missions');
+// const homeRoutes = require('./routes/home');
+// const aboutRoutes = require('./routes/about');
+// const contactRoutes = require('./routes/contact');
+// const donationsRoutes = require('./routes/donations');
+// const galleryRoutes = require('./routes/gallery');
+// const missionsRoutes = require('./routes/missions');
 const pastHistoryRoutes = require('./routes/past-history');
 const loginRoutes = require('./routes/login');
 const registerRoutes = require('./routes/register');
@@ -34,25 +35,27 @@ app.use(bodyParser.urlencoded({
 }));
 
 // Calling Route Object
-app.use(homeRoutes);
-app.use(aboutRoutes);
-app.use(contactRoutes);
-app.use(donationsRoutes);
-app.use(galleryRoutes);
-app.use(missionsRoutes);
+// app.use(homeRoutes);
+// app.use(aboutRoutes);
+// app.use(contactRoutes);
+// app.use(donationsRoutes);
+// app.use(galleryRoutes);
+// app.use(missionsRoutes);
 app.use(pastHistoryRoutes);
 app.use(loginRoutes);
 app.use(registerRoutes);
 app.use(forgetPassRoutes);
 app.use(newPassRoutes);
 
+app.use(cookieParser());
+
 app.set('trust proxy', 1) // trust first proxy
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }
-}));
+// app.use(session({
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: true }
+// }));
 
 let random = Math.floor(Math.pow(Math.random(), 3) * 100000000);
 // console.log(random);
@@ -80,6 +83,7 @@ const User = new mongoose.model('User', userSchema);
 const Mission = new mongoose.model('Mission', missionSchema);
 
 var obj = new Object();
+let userLogin = false;
 
 app.post("/register", function (req, res) {
 
@@ -108,8 +112,10 @@ app.post("/login", function (req, res) {
 
     const email = req.body.email;
     const password = md5(req.body.password);
-    req.session.email = email;
-    res.locals.email = email;
+
+    res.cookie("userLogin", email);
+
+    // console.log(req.cookies);
 
     User.findOne({ email: email }, function (err, foundUser) {
         if (err) {
@@ -124,15 +130,15 @@ app.post("/login", function (req, res) {
                         //   res.locals.email = req.session.email;
                         //   next();
                         // });
-                        res.render('about');
+                        res.redirect('/about');
                     }
                     else {
 
-                        res.render('donations');
+                        res.redirect('/donations');
+
                     }
                 }
                 else {
-                    req.session.reset();
                     res.redirect('/login');
                     console.log('Wrong password');
                 }
@@ -142,6 +148,41 @@ app.post("/login", function (req, res) {
 });
 
 
+app.get('/donations', function (req, res) {
+    userLogin = req.cookies.userLogin;
+    // app.locals.Login = userLogin;
+    if (userLogin) {
+        res.render('donations', { myAccount: userLogin });
+        console.log(userLogin);
+    }
+    else {
+        res.redirect('login');
+    }
+});
+
+app.get("/home", function (req, res) {
+    res.redirect("/");
+});
+
+app.get("/", function (req, res) {
+    res.render("home", { myAccount: userLogin });
+});
+
+app.get("/contact", function (req, res) {
+    res.render("contact", { myAccount: userLogin });
+});
+
+app.get("/about", function (req, res) {
+    res.render("about", { myAccount: userLogin });
+});
+
+app.get("/missions", function (req, res) {
+    res.render("missions", { myAccount: userLogin });
+});
+
+app.get("/gallery", function (req, res) {
+    res.render("gallery", { myAccount: userLogin });
+});
 
 
 app.post("/forget-pass", function (req, res) {
@@ -221,24 +262,16 @@ app.post("/new-pass", function (req, res) {
 
 })
 
-app.get("/donations", function (req, res) {
-    if (req.isAuthenticated()) {
-        res.render("donations");
-    } else {
-        res.redirect("/login");
-    }
-
-});
-
-
 
 app.get("/logout", function (req, res) {
-    req.logout();
+    userLogin = false;
+    res.clearCookie('userLogin');
+    // console.log(req.cookies);
     res.redirect("/");
 });
 
 app.use(function (req, res, next) {
-    res.render('404');
+    res.status(404).render('404', { myAccount: userLogin });
 });
 
 app.listen(3000, function () {

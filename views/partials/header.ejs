@@ -104,7 +104,11 @@
     <a href="./missions">Missions</a>
     <a href="./gallery">Gallery</a>
     <a href="./contact">Contact</a>
+    <% if (myAccount) { %>
+    <a href="./logout">Logout</a>
+    <% } else {%>
     <a href="./login">Login</a>
+    <% } %>
 
     <a href="javascript:void(0);" class="icon" onclick="myFunction()">
       <i class="fa fa-bars"></i>

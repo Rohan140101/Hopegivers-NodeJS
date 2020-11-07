@@ -1,9 +1,9 @@
-const express = require('express');
-const router = express.Router();
+// const express = require('express');
+// const router = express.Router();
 
-router.get("/gallery", function (req, res) {
-    res.render("gallery");
-});
+// router.get("/gallery", function (req, res) {
+//     res.render("gallery");
+// });
 
 
-module.exports = router;
+// module.exports = router;
