@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>HopeGivers</title>
+	<link rel="stylesheet" type="text/css" href="css/register.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
+</head>
+
+<body>
+
+	<!-- multistep form -->
+	<form action="/forget-pass" method="POST" id="multistepsform" autocomplete="off">
+		<p style="margin-top: 150px;"></p>
+		<!-- fieldsets -->
+		<fieldset>
+			<h2 class="fs-title">Forgot Your Password?</h2>
+			<h3 class="fs-subtitle"></h3>
+			<input type="text" name="email" placeholder="Enter Your Email" required />
+			<input type="submit" name="submit" class="submit action-button" value="Get Link" />
+			<p>A verification link will be sent to your email in a few moments</p>
+			<h3 class="fs-subtitle"></h3>
+		</fieldset>
+		<p class="member-login">
+			Not yet a member? <a href="register">Sign up</a>
+		</p>
+
+	</form>
+
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</body>
+
+</html>
