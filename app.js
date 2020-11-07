@@ -10,7 +10,7 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const Stripe = require('stripe');
-const stripe = Stripe(process.env.STRIPE_API);
+const stripe = Stripe(process.env.STRIPE_SECRET_API);
 const cookieParser = require('cookie-parser');
 
 // Routing 
@@ -84,6 +84,8 @@ const Mission = new mongoose.model('Mission', missionSchema);
 
 var obj = new Object();
 let userLogin = false;
+let publisher_key = process.env.STRIPE_PUBLISHER_API;
+let secret_key = process.env.STRIPE_SECRET_API;
 
 app.post("/register", function (req, res) {
 
@@ -152,13 +154,40 @@ app.get('/donations', function (req, res) {
     userLogin = req.cookies.userLogin;
     // app.locals.Login = userLogin;
     if (userLogin) {
-        res.render('donations', { myAccount: userLogin });
+        res.render('donations', { myAccount: userLogin, key: publisher_key });
         console.log(userLogin);
     }
     else {
         res.redirect('login');
     }
 });
+
+app.post('/payment', function (req, res) {
+
+    const customers = stripe.customers.create({
+        email: req.body.stripeEmail,
+        source: req.body.stripeToken,
+        name: 'Charity Donations',
+
+    })
+        .then((customer) => {
+
+            return stripe.charges.create({
+                amount: 7000,    // Charing Rs 25 
+                description: 'Web Development Product',
+                currency: 'inr',
+                customer: customer.id
+            });
+        })
+        .then((charge) => {
+            res.send("Success") // If no error occurs 
+        })
+        .catch((err) => {
+            res.send(err)    // If some error occurs 
+        });
+
+});
+
 
 app.get("/home", function (req, res) {
     res.redirect("/");
