@@ -61,7 +61,7 @@ app.set('trust proxy', 1) // trust first proxy
 let random = Math.floor(Math.pow(Math.random(), 3) * 100000000);
 // console.log(random);
 
-var url = "mongodb+srv://analytics:analytics1@analytics.5phgk.mongodb.net/hopegivers?retryWrites=true&w=majority"
+var url = process.env.MONGOD_API;
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const userSchema = new mongoose.Schema({
