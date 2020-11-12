@@ -8,6 +8,12 @@
   <!-- Bootstrap Link -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style type="text/css">
+    h1 {
+      margin: auto;
+      text-align: center;
+    }
+  </style>
 
 </head>
 
@@ -23,43 +29,42 @@
 
   </div>
 
-  <!-- This is the Section where table is created, which includes Task ID, Task Name & Task action -->
   <div class="container-fluid container-md mt-4 table-responsive table-hover">
     <table class="table table-design">
       <!-- Name of the columns in the table -->
       <thead class="thead">
         <tr class="thead-font">
           <th scope="col-1">SN.</th>
-          <th scope="col-9" width='50%'>Amount</th>
+          <th scope="col-9">Amount</th>
+          <th scope="col-9">Cloth Type</th>
+          <th scope="col-9">Cloth Gender</th>
           <th scope="col-1" class="pl-4">Date</th>
         </tr>
       </thead>
       <tbody>
 
         <!-- body which will be fetched from the database with the action buttons -->
-        <% $i =1; while ($row = mysqli_fetch_array($donate_amount)) { %>
+        <% var serial_no = 0 %>
+        <% history.forEach(element =>{ %>
         <tr>
-
-          <!-- Fetching the data  -->
-          <th scope="row"><?php echo $i; ?></th>
-          <td>
-            <div class='edit' id='amount_<?php echo $id; ?>'>
-              <?php echo $row['amount']; ?>
-            </div>
-          </td>
-          <td>
-            <?php echo $row['date']; ?>
-          </td>
+          <td><%= serial_no %></td>
+          <td><%= element.amount %></td>
+          <td><%= element.cloth_type %></td>
+          <td><%= element.cloth_gender %></td>
+          <td><%= element.date %></td>
         </tr>
-        <?php $i++; } ?>
+        <% serial_no += 1 %>
+        <% }); %>
       </tbody>
     </table>
+  </div>
 
-    <!-- BootStrap Links -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+  <!-- BootStrap Links -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 
 </html>

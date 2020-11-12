@@ -26,6 +26,7 @@ const registerRoutes = require('./routes/register');
 const forgetPassRoutes = require('./routes/forget-pass');
 const newPassRoutes = require('./routes/new-pass');
 
+
 const app = express();
 
 app.use(express.static("public"));
@@ -60,8 +61,8 @@ app.set('trust proxy', 1) // trust first proxy
 let random = Math.floor(Math.pow(Math.random(), 3) * 100000000);
 // console.log(random);
 
-mongoose.connect("mongodb://localhost:27017/hopegivers", { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.set("useCreateIndex", true);
+var url = "mongodb+srv://analytics:analytics1@analytics.5phgk.mongodb.net/hopegivers?retryWrites=true&w=majority"
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const userSchema = new mongoose.Schema({
     first_name: String,
@@ -79,8 +80,25 @@ const missionSchema = new mongoose.Schema({
 
 });
 
+const moneyDonateSchema = new mongoose.Schema({
+    email: String,
+    amount: Number,
+    date: String
+})
+
+const clothDonateSchema = new mongoose.Schema({
+    email: String,
+    cloth_type: String,
+    cloth_gender: String,
+    date: String
+})
+
+
+
 const User = new mongoose.model('User', userSchema);
 const Mission = new mongoose.model('Mission', missionSchema);
+const MoneyDonate = new mongoose.model('Money_donate', moneyDonateSchema, 'money_donate');
+const ClothDonate = new mongoose.model('Cloth_donate', clothDonateSchema, 'cloth_donate');
 
 var obj = new Object();
 let userLogin = false;
@@ -290,6 +308,37 @@ app.post("/new-pass", function (req, res) {
     }
 
 })
+
+
+// Past-History Route
+
+app.get("/check-past-history", function (req, res) {
+    if (userLogin) {
+        MoneyDonate.find({ email: userLogin }, function (err, foundMoneyHistory) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                ClothDonate.find({ email: userLogin }, function (err, foundClothHistory) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    else {
+                        var history = foundMoneyHistory.concat(foundClothHistory);
+                        // console.log(history);
+                        res.render("past-history", { history: history, myAccount: userLogin });
+
+                    }
+                })
+
+            }
+        })
+    }
+    else {
+        res.redirect('/login');
+    }
+
+});
 
 
 app.get("/logout", function (req, res) {
