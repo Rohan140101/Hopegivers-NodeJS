@@ -9,8 +9,7 @@ const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-const Stripe = require('stripe');
-const stripe = Stripe(process.env.STRIPE_SECRET_API);
+const stripe = require('stripe')(process.env.STRIPE_SECRET_API);
 const cookieParser = require('cookie-parser');
 
 // Routing 
@@ -60,6 +59,7 @@ app.set('trust proxy', 1) // trust first proxy
 
 let random = Math.floor(Math.pow(Math.random(), 3) * 100000000);
 // console.log(random);
+let amount = 0;
 
 var url = process.env.MONGOD_API;
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -146,10 +146,7 @@ app.post("/login", function (req, res) {
                 if (foundUser.password === password) {
                     let admin_email = process.env.ADMIN_EMAIL;
                     if (foundUser.email === admin_email) {
-                        // app.use(function(req, res, next) {
-                        //   res.locals.email = req.session.email;
-                        //   next();
-                        // });
+                        // userLogin = email;
                         res.redirect('/about');
                     }
                     else {
@@ -180,7 +177,32 @@ app.get('/donations', function (req, res) {
     }
 });
 
+app.post('/donations', async (req, res, next) => {
+    // TO ADD: data validation, storing errors in an `errors` variable!
+    // const name = req.body.name;
+    // const email = req.body.email;
+    amount = req.body.amount;
+    if (true) { // Data is valid!
+        try {
+            // Create a PI:
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount * 100, // In cents
+                currency: 'inr',
+                receipt_email: userLogin,
+            });
+            res.render('card', { key: publisher_key, amount: amount * 100, intentSecret: paymentIntent.client_secret });
+        } catch (err) {
+            console.log('Error! ', err.message);
+        }
+    } else {
+        res.render('donations', { title: 'Donate', errors: errors });
+    }
+});
+
 app.post('/payment', function (req, res) {
+
+    amount = Math.round(amount * 100);
+    console.log(amount);
 
     const customers = stripe.customers.create({
         email: req.body.stripeEmail,
@@ -191,8 +213,8 @@ app.post('/payment', function (req, res) {
         .then((customer) => {
 
             return stripe.charges.create({
-                amount: 7000,    // Charing Rs 25 
-                description: 'Web Development Product',
+                amount: amount,    // Charing Rs 25 
+                description: 'Chairty which cares for others',
                 currency: 'inr',
                 customer: customer.id
             });

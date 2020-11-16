@@ -56,7 +56,7 @@
       transition: background 0.20s linear;
     }
   </style>
-
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 </head>
 
 <body>
@@ -71,10 +71,18 @@
   </div>
 
   <h3>Welcome to Payment Gateway</h3>
-  <form action="/payment" method="POST">
-    <script src="//checkout.stripe.com/v2/checkout.js" class="stripe-button" data-key="<%= key %>" data-amount="7000"
+  <form action="/donations" method="POST">
+    <div>
+      <label for="amount">Amount: </label>
+      <input id="amount" type="number" name="amount" min="10">
+    </div>
+    <div>
+      <button type="submit">Next</button>
+    </div>
+
+    <!-- <script src="//checkout.stripe.com/v2/checkout.js" class="stripe-button" data-key="<%= key %>" data-amount="7000"
       data-currency="inr" data-name="HopeGivers" data-description="Chairty which cares for others" data-locale="auto">
-      </script>
+      </script> -->
   </form>
 
 
@@ -82,7 +90,6 @@
   <div class="pb-5"></div>
   </div>
   <%- include ('./partials/footer') -%>
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>

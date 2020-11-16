@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Complete your donation</h1>
+    <p>Thank you, for your generosity! Please enter your payment details below to complete your donation.</p>
+    <form method="POST" action="/payment" id="card">
+        <script src="//checkout.stripe.com/v2/checkout.js" class="stripe-button" data-key="<%= key %>"
+            data-amount="<%= amount %> " data-currency="inr" data-name="HopeGivers"
+            data-description="Chairty which cares for others" data-locale="auto">
+            </script>
+    </form>
+</body>
+
+</html>
