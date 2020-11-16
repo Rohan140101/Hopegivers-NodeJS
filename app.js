@@ -59,7 +59,7 @@ app.set('trust proxy', 1) // trust first proxy
 
 let random = Math.floor(Math.pow(Math.random(), 3) * 100000000);
 // console.log(random);
-let amount = 0;
+let amount = 0, message;
 
 var url = process.env.MONGOD_API;
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -83,6 +83,7 @@ const missionSchema = new mongoose.Schema({
 const moneyDonateSchema = new mongoose.Schema({
     email: String,
     amount: Number,
+    message: String,
     date: String
 })
 
@@ -90,10 +91,9 @@ const clothDonateSchema = new mongoose.Schema({
     email: String,
     cloth_type: String,
     cloth_gender: String,
+    message: String,
     date: String
 })
-
-
 
 const User = new mongoose.model('User', userSchema);
 const Mission = new mongoose.model('Mission', missionSchema);
@@ -104,6 +104,12 @@ var obj = new Object();
 let userLogin = false;
 let publisher_key = process.env.STRIPE_PUBLISHER_API;
 let secret_key = process.env.STRIPE_SECRET_API;
+
+today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth() + 1;
+var yyyy = today.getFullYear();
+var stringDate = dd + "-" + mm + "-" + yyyy;
 
 app.post("/register", function (req, res) {
 
@@ -182,6 +188,7 @@ app.post('/donations', async (req, res, next) => {
     // const name = req.body.name;
     // const email = req.body.email;
     amount = req.body.amount;
+    message = req.body.message;
     if (true) { // Data is valid!
         try {
             // Create a PI:
@@ -202,7 +209,15 @@ app.post('/donations', async (req, res, next) => {
 app.post('/payment', function (req, res) {
 
     amount = Math.round(amount * 100);
-    console.log(amount);
+    console.log(amount / 100);
+    console.log(message);
+
+    const newMoneyDonate = new MoneyDonate({
+        email: userLogin,
+        amount: amount / 100,
+        message: message,
+        date: stringDate
+    })
 
     const customers = stripe.customers.create({
         email: req.body.stripeEmail,
@@ -220,7 +235,16 @@ app.post('/payment', function (req, res) {
             });
         })
         .then((charge) => {
-            res.send("Success") // If no error occurs 
+            // res.send("Success") // If no error occurs 
+            newMoneyDonate.save(function (err) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    console.log("Money Donated Successfully");
+                    res.redirect('/');
+                }
+            });
         })
         .catch((err) => {
             res.send(err)    // If some error occurs 
@@ -228,31 +252,26 @@ app.post('/payment', function (req, res) {
 
 });
 
+app.post('/donateClothes', function (req, res) {
 
-app.get("/home", function (req, res) {
-    res.redirect("/");
-});
+    const newClothDonate = new ClothDonate({
+        email: userLogin,
+        cloth_type: req.body.cloth_type,
+        cloth_gender: req.body.cloth_gender,
+        message: req.body.message,
+        date: stringDate
+    })
 
-app.get("/", function (req, res) {
-    res.render("home", { myAccount: userLogin });
-});
-
-app.get("/contact", function (req, res) {
-    res.render("contact", { myAccount: userLogin });
-});
-
-app.get("/about", function (req, res) {
-    res.render("about", { myAccount: userLogin });
-});
-
-app.get("/missions", function (req, res) {
-    res.render("missions", { myAccount: userLogin });
-});
-
-app.get("/gallery", function (req, res) {
-    res.render("gallery", { myAccount: userLogin });
-});
-
+    newClothDonate.save(function (err) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log("Data Inserted Successfully");
+            res.redirect('/');
+        }
+    });
+})
 
 app.post("/forget-pass", function (req, res) {
 
@@ -362,6 +381,29 @@ app.get("/check-past-history", function (req, res) {
 
 });
 
+app.get("/home", function (req, res) {
+    res.redirect("/");
+});
+
+app.get("/", function (req, res) {
+    res.render("home", { myAccount: userLogin });
+});
+
+app.get("/contact", function (req, res) {
+    res.render("contact", { myAccount: userLogin });
+});
+
+app.get("/about", function (req, res) {
+    res.render("about", { myAccount: userLogin });
+});
+
+app.get("/missions", function (req, res) {
+    res.render("missions", { myAccount: userLogin });
+});
+
+app.get("/gallery", function (req, res) {
+    res.render("gallery", { myAccount: userLogin });
+});
 
 app.get("/logout", function (req, res) {
     userLogin = false;
