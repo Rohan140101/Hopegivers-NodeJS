@@ -3,10 +3,12 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&display=swap" rel="stylesheet">
+
   <style>
     .topnav {
       overflow: hidden;
@@ -14,7 +16,8 @@
       font-weight: 500;
     }
 
-    .topnav a {
+    .topnav a,
+    .dropdown {
       color: #8e8a8a;
       float: left;
       display: block;
@@ -25,6 +28,21 @@
       line-height: 50px;
       text-transform: capitalize;
     }
+
+    .dropdown {
+      overflow: hidden;
+    }
+
+    .dropdown .dropbtn {
+      font-size: 16px;
+      color: #8e8a8a;
+      border: none;
+      outline: none;
+      background-color: inherit;
+      font-family: inherit;
+      margin: 0;
+    }
+
 
     .topnav .logo {
       font-family: 'Montserrat', sans-serif;
@@ -37,11 +55,33 @@
 
     }
 
-    .topnav a:hover {
+    .topnav>a:hover,
+    .dropdown:hover .dropbtn {
       color: #C82333;
     }
 
-    .topnav a:first-child:hover {
+    .dropdown-content {
+      display: none;
+      /* position: absolute; */
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+
+    .dropdown-content a {
+      float: none;
+      color: black;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .topnav>a:first-child:hover {
       color: #2F3191;
     }
 
@@ -105,7 +145,15 @@
     <a href="./gallery">Gallery</a>
     <a href="./contact">Contact</a>
     <% if (myAccount) { %>
-    <a href="./logout">Logout</a>
+    <div class="dropdown">
+      <button class="dropbtn">My Account
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="#">Your Payments</a>
+        <a href="#">Logout</a>
+      </div>
+    </div>
     <% } else {%>
     <a href="./login">Login</a>
     <% } %>

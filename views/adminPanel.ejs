@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="Dashboard">
+  <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+  <title>Admin Panel</title>
+
+  <!-- Favicons -->
+  <link href="img/hopegivers.png" rel="icon">
+  <link href="img/hopegivers.png" rel="apple-touch-icon">
+
+  <!-- Bootstrap core CSS -->
+  <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!--external css-->
+  <link href="lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="css/zabuto_calendar.css">
+  <link rel="stylesheet" type="text/css" href="lib/gritter/css/jquery.gritter.css" />
+  <!-- Custom styles for this template -->
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/style-responsive.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+
+  <!-- extra -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
+
+  <script src="lib/chart-master/Chart.js"></script>
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    #msg {
+      padding: 5px;
+      text-align: center;
+      margin-bottom: 50px;
+      align-items: center;
+      margin-top: 30px;
+      font-size: 50px;
+      background-color: #F56565;
+      color: #fff;
+      border-radius: 15px;
+      box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.4);
+
+    }
+
+    #msg .quoteStyle {
+      width: 60%;
+      text-align: center;
+      margin-bottom: 50px;
+      align-items: center;
+
+    }
+
+    .quotes-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background-color: #F56565;
+      color: #fff;
+      padding: 120px 100px;
+      margin-bottom: 50px;
+      margin-top: 10px;
+      border-radius: 15px;
+      box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .ludwig {
+      font-size: 44px;
+      line-height: 1.2;
+      font-family: 'Montserrat', sans-serif;
+      font-style: italic;
+      margin-left: 5px;
+      animation-fill-mode: both;
+    }
+
+    .card-body {
+      padding: 10px;
+    }
+
+    .card-title {
+      text-align: center;
+      padding: 10px;
+      color: #fff;
+      /* box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.08); */
+    }
+
+    .card-title>p {
+      font-size: 35px;
+      font-weight: bold;
+    }
+
+    .card-title>p::after {
+      display: block;
+      margin-top: 5px;
+      box-sizing: border-box;
+      content: "";
+      width: 100%;
+      border-bottom: solid 2px #fff;
+      border-radius: 20pxs;
+    }
+
+    .card-text {
+      text-align: center;
+      padding: 10px;
+      font-size: 44px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    #cardStyle {
+      border-radius: 15px;
+      box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .adminFont {
+      display: inline-block;
+      /* font-size: 130px; */
+      color: white;
+      position: absolute;
+      /* top: 72px; */
+      top: 150px;
+      left: 75%;
+      font-size: 120px;
+    }
+  </style>
+</head>
+
+<body>
+  <section id="container">
+    <!--header start-->
+    <%- include('partials/admin-header') %>
+    <!--header end-->
+
+    <!--sidebar start-->
+    <%- include('partials/admin-sidebar') %>
+    <!--sidebar end-->
+
+    <!--main content start-->
+    <section id="main-content">
+      <section class="wrapper">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-sm-12">
+
+              <div class="quotes-container">
+                <p class="ludwig">
+                  <span style="display: block;">“When the world says,
+                    <span style="font-weight: bold;">Give up.</span>
+                  </span>
+                  <span style="display: block;">Hope whispers...
+                    <span style="font-weight: bold;">Try it one more time.”</span>
+                  </span>
+                </p>
+              </div>
+
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="card" id="cardStyle" style="background-color: #007bff ; ">
+                <div class="card-body">
+                  <div class="card-title">
+                    <p>No. of Users</p>
+                  </div>
+                  <i class="fas fa-comment adminFont" style="transform: rotate(20deg); "></i>
+                  <div class="card-text">
+                    <p> <%=countuser%> </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="card" id="cardStyle" style="background-color: #ffc107;">
+                <div class="card-body">
+                  <div class="card-title">
+                    <p>No. of Missions</p>
+                  </div>
+                  <i class="far fa-life-ring adminFont" style="transform: rotate(-25deg);"></i>
+                  <div class="card-text">
+                    <p><%= countmission %></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="card" id="cardStyle" style="background-color: #4a934a ;">
+                <div class="card-body">
+                  <div class="card-title">
+                    <p>Amt of Donations</p>
+                  </div>
+                  <i class="fas fa-list adminFont"
+                    style="transform: rotate(-25deg); top: 160px; left: 75%;  font-size: 120px;"></i>
+                  <div class="card-text">
+                    <p><%=totalAmount%></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+    <!-- js placed at the end of the document so the pages load faster -->
+    <script src="lib/jquery/jquery.min.js"></script>
+
+    <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <script class="include" type="text/javascript" src="lib/jquery.dcjqaccordion.2.7.js"></script>
+    <script src="lib/jquery.scrollTo.min.js"></script>
+    <script src="lib/jquery.nicescroll.js" type="text/javascript"></script>
+    <script src="lib/jquery.sparkline.js"></script>
+    <!--common script for all pages-->
+    <script src="lib/common-scripts.js"></script>
+    <script type="text/javascript" src="lib/gritter/js/jquery.gritter.js"></script>
+    <script type="text/javascript" src="lib/gritter-conf.js"></script>
+    <!--script for this page-->
+
+</body>
+
+</html>

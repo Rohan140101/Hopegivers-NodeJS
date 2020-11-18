@@ -5,12 +5,15 @@ const ejs = require("ejs");
 const mongoose = require("mongoose");
 const md5 = require('md5');
 const session = require('express-session');
-const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
+// const passport = require("passport");
+// const passportLocalMongoose = require("passport-local-mongoose");
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const stripe = require('stripe')(process.env.STRIPE_SECRET_API);
 const cookieParser = require('cookie-parser');
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
 
 // Routing 
 // const homeRoutes = require('./routes/home');
@@ -25,7 +28,6 @@ const registerRoutes = require('./routes/register');
 const forgetPassRoutes = require('./routes/forget-pass');
 const newPassRoutes = require('./routes/new-pass');
 
-
 const app = express();
 
 app.use(express.static("public"));
@@ -38,7 +40,7 @@ app.use(bodyParser.urlencoded({
 // app.use(homeRoutes);
 // app.use(aboutRoutes);
 // app.use(contactRoutes);
-// app.use(donationsRoutes);
+// // app.use(donationsRoutes);
 // app.use(galleryRoutes);
 // app.use(missionsRoutes);
 app.use(pastHistoryRoutes);
@@ -63,6 +65,7 @@ let amount = 0, message;
 
 var url = process.env.MONGOD_API;
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.set("useCreateIndex", true);
 
 const userSchema = new mongoose.Schema({
     first_name: String,
@@ -71,13 +74,6 @@ const userSchema = new mongoose.Schema({
     address: String,
     dob: String,
     password: String,
-});
-
-const missionSchema = new mongoose.Schema({
-    Image: String,
-    title: String,
-    content: String,
-
 });
 
 const moneyDonateSchema = new mongoose.Schema({
@@ -95,21 +91,57 @@ const clothDonateSchema = new mongoose.Schema({
     date: String
 })
 
+const missionSchema = new mongoose.Schema({
+    image: String,
+    title: String,
+    description: String,
+});
+
+const gallerySchema = new mongoose.Schema({
+    image: String
+});
+
+const ContactUsSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    subject: String,
+    message: String,
+    date: String,
+    status: String,
+    answer: String
+})
+
 const User = new mongoose.model('User', userSchema);
-const Mission = new mongoose.model('Mission', missionSchema);
 const MoneyDonate = new mongoose.model('Money_donate', moneyDonateSchema, 'money_donate');
 const ClothDonate = new mongoose.model('Cloth_donate', clothDonateSchema, 'cloth_donate');
+const Mission = new mongoose.model('Mission', missionSchema);
+const Gallery = new mongoose.model('Gallery', gallerySchema);
+const ContactUs = new mongoose.model('ContactUs', ContactUsSchema, 'contact_us');
 
 var obj = new Object();
 let userLogin = false;
 let publisher_key = process.env.STRIPE_PUBLISHER_API;
 let secret_key = process.env.STRIPE_SECRET_API;
+let flag = false;
 
 today = new Date();
 var dd = today.getDate();
 var mm = today.getMonth() + 1;
 var yyyy = today.getFullYear();
 var stringDate = dd + "-" + mm + "-" + yyyy;
+
+//Setting Multer Storage Engine
+const storage = multer.diskStorage({
+    destination: "./public/uploads/",
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+})
+
+//Init Upload
+const upload = multer({
+    storage: storage
+}).single('image')
 
 app.post("/register", function (req, res) {
 
@@ -120,7 +152,6 @@ app.post("/register", function (req, res) {
         address: req.body.address,
         dob: req.body.dob,
         password: md5(req.body.password)
-
     })
 
     newUser.save(function (err) {
@@ -128,21 +159,18 @@ app.post("/register", function (req, res) {
             console.log(err);
         }
         else {
-            res.redirect('donations');
+            res.redirect('login');
         }
     });
 
 });
 
 app.post("/login", function (req, res) {
-
     const email = req.body.email;
     const password = md5(req.body.password);
 
     res.cookie("userLogin", email);
-
-    // console.log(req.cookies);
-
+    // console.log(req.cookie);
     User.findOne({ email: email }, function (err, foundUser) {
         if (err) {
             console.log(err);
@@ -152,13 +180,11 @@ app.post("/login", function (req, res) {
                 if (foundUser.password === password) {
                     let admin_email = process.env.ADMIN_EMAIL;
                     if (foundUser.email === admin_email) {
-                        // userLogin = email;
-                        res.redirect('/about');
+                        res.redirect('/adminPanel');
                     }
                     else {
-
-                        res.redirect('/donations');
-
+                        userLogin = email;
+                        res.redirect('/');
                     }
                 }
                 else {
@@ -169,7 +195,6 @@ app.post("/login", function (req, res) {
         }
     })
 });
-
 
 app.get('/donations', function (req, res) {
     userLogin = req.cookies.userLogin;
@@ -207,26 +232,21 @@ app.post('/donateMoney', async (req, res, next) => {
 });
 
 app.post('/payment', function (req, res) {
-
     amount = Math.round(amount * 100);
     console.log(amount / 100);
     console.log(message);
-
     const newMoneyDonate = new MoneyDonate({
         email: userLogin,
         amount: amount / 100,
         message: message,
         date: stringDate
     })
-
     const customers = stripe.customers.create({
         email: req.body.stripeEmail,
         source: req.body.stripeToken,
         name: 'Charity Donations',
-
     })
         .then((customer) => {
-
             return stripe.charges.create({
                 amount: amount,    // Charing Rs 25 
                 description: 'Chairty which cares for others',
@@ -249,11 +269,9 @@ app.post('/payment', function (req, res) {
         .catch((err) => {
             res.send(err)    // If some error occurs 
         });
-
 });
 
 app.post('/donateClothes', function (req, res) {
-
     const newClothDonate = new ClothDonate({
         email: userLogin,
         cloth_type: req.body.cloth_type,
@@ -261,7 +279,6 @@ app.post('/donateClothes', function (req, res) {
         message: req.body.message,
         date: stringDate
     })
-
     newClothDonate.save(function (err) {
         if (err) {
             console.log(err);
@@ -272,7 +289,6 @@ app.post('/donateClothes', function (req, res) {
         }
     });
 });
-
 
 app.get("/check-past-history", function (req, res) {
     // userLogin = req.cookies.userLogin;
@@ -301,7 +317,6 @@ app.get("/check-past-history", function (req, res) {
         res.redirect('/login');
     }
 });
-
 
 app.post("/forget-pass", function (req, res) {
 
@@ -344,6 +359,7 @@ app.post("/forget-pass", function (req, res) {
 });
 
 
+
 app.get("/new-pass/:random", function (req, res) {
     let random_forgot_pass = req.params.random;
     // console.log(obj);
@@ -359,26 +375,242 @@ app.get("/new-pass/:random", function (req, res) {
 app.post("/new-pass", function (req, res) {
     let new_password = md5(req.body.password);
     if (obj.email_id) {
-        let password_is_same = User.findOne({ email: obj.email_id }, { password: new_password });
-        if (password_is_same) {
-            console.log('Password same hai bhai');
-            res.render('new-pass', { Password_Same: password_is_same });
+        User.updateOne({ email: obj.email_id }, { password: new_password }, function (err) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                res.redirect('/login');
+            }
+        })
+    }
+});
+
+
+
+app.get("/adminPanel", function (req, res) {
+    var countuser = 0;
+    var countmission = 0;
+    var totalAmount = 0;
+    flag = "adminPanel";
+    User.countDocuments({}, function (err, result) {
+        if (err) {
+            console.log(err);
+        } else {
+            countuser = result;
+            console.log("user" + countuser);
+            Mission.countDocuments({}, function (err, result) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    countmission = result;
+                    console.log("mission" + countmission);
+                    MoneyDonate.find({}, function (err, found) {
+                        if (err) {
+                            console.log(err)
+                        }
+                        else {
+                            found.forEach(element => { totalAmount += element.amount });
+                            // found.forEach(element=>{console.log(element.amount)})
+                            console.log(totalAmount);
+                            res.render('adminPanel', { flag: flag, myAccount: userLogin, countuser: countuser, countmission: countmission, totalAmount: totalAmount });
+                        }
+                    });
+
+                }
+            });
+        }
+    });
+
+
+})
+
+app.get("/todaysDonations", function (req, res) {
+    flag = "todaysDonations";
+    MoneyDonate.find({ date: stringDate }, function (err, todayMoneyDonation) {
+        if (err) {
+            console.log(err);
         }
         else {
-            User.updateOne({ email: obj.email_id }, { password: new_password }, function (err) {
+            ClothDonate.find({ date: stringDate }, function (err, todayClothDonation) {
                 if (err) {
                     console.log(err);
                 }
                 else {
-                    res.redirect('/login');
+                    var todayDonation = todayMoneyDonation.concat(todayClothDonation);
+                    // console.log(todayDonation);
+                    res.render('todaysDonations', { flag: flag, todayDonation: todayDonation });
+
                 }
-            }
-            )
+            })
+
         }
-    }
+    })
+})
+
+app.post('/addMissions', function (req, res) {
+    upload(req, res, (err) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log(req.file);
+            let path_mission = 'uploads/' + req.file.filename;
+            // console.log(path_gallery); 
+            var newMission = {
+                image: path_mission,
+                title: req.body.missionTitle,
+                description: req.body.missionDesc
+            }
+            Mission.create(newMission, (err, item) => {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    console.log("Image Saved in Mission DB");
+                    res.redirect('adminPanel');
+                }
+            });
+        }
+
+    })
 
 })
 
+app.post('/addGallery', function (req, res) {
+    upload(req, res, (err) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log(req.file);
+            let path_gallery = 'uploads/' + req.file.filename;
+            console.log(path_gallery);
+            var newGallery = {
+                image: path_gallery
+            }
+            Gallery.create(newGallery, (err, item) => {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    console.log("Image Saved in Gallery DB");
+                    res.redirect('adminPanel');
+                }
+            });
+        }
+    })
+})
+
+app.get("/checkUserQueries", function (req, res) {
+    flag = "checkUserQueries";
+    ContactUs.find({ status: "Pending" }, function (err, foundUserQueries) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            res.render('checkUserQueries', { flag: flag, foundUserQueries: foundUserQueries });
+        }
+    })
+})
+
+app.get("/ignoreQuery/:contactid", function (req, res) {
+    let contactid = req.params.contactid;
+    // console.log(obj);
+    // console.log(contactid);
+    ContactUs.updateOne({ "_id": new mongoose.Types.ObjectId(contactid) }, { status: "Ignored" }, function (err, updatedContact) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            res.redirect('/checkUserQueries');
+        }
+    })
+})
+
+app.post("/answerQuery/:contactid", function (req, res) {
+    let contactid = req.params.contactid;
+    // console.log(contactid);
+    // console.log(req.body.answer);
+    ContactUs.findOne({ "_id": new mongoose.Types.ObjectId(contactid) }, function (err, foundContact) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            let admin_email = process.env.ADMIN_EMAIL;
+            const msg = {
+                to: foundContact.email, // Change to your recipient
+                from: admin_email, // Change to your verified sender
+                subject: 'Reply to Query Submitted on Hopegivers',
+                text: 'Team Hopegivers',
+                html: 'Hello ' + foundContact.name + '<br>This is in response to your Query titled ' + foundContact.subject + '<br><br>' + req.body.answer + '<br><br>Regards<br>Team Hopegivers'
+            }
+            sgMail
+                .send(msg)
+                .then(() => {
+                    console.log('Email sent');
+                    ContactUs.findOneAndUpdate({ "_id": new mongoose.Types.ObjectId(contactid) }, { $set: { status: "Answered", answer: req.body.answer } }, function (err, updatedContact) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        else {
+                            res.redirect('/checkUserQueries');
+                        }
+                    })
+                })
+                .catch((error) => {
+                    console.error(error)
+                })
+        }
+    })
+})
+
+app.get('/missions', function (req, res) {
+    Mission.find({}, function (err, foundMissions) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            // console.log(foundMissions);
+            res.render('missions', { myAccount: userLogin, foundMissions: foundMissions })
+
+        }
+    })
+})
+
+app.get("/gallery", function (req, res) {
+    Gallery.find({}, function (err, foundGallery) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            // console.log(foundMissions);
+            res.render('gallery', { myAccount: userLogin, foundGallery: foundGallery })
+
+        }
+    })
+});
+
+app.post('/contact', function (req, res) {
+    newContactUs = {
+        name: req.body.name,
+        email: req.body.email,
+        subject: req.body.subject,
+        message: req.body.message,
+        date: stringDate,
+        status: "Pending"
+    }
+
+    ContactUs.create(newContactUs, function (err, item) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            // console.log(item);
+            res.render('contactSuccess', { myAccount: userLogin })
+        }
+    })
+})
 
 app.get("/home", function (req, res) {
     res.redirect("/");
@@ -394,14 +626,6 @@ app.get("/contact", function (req, res) {
 
 app.get("/about", function (req, res) {
     res.render("about", { myAccount: userLogin });
-});
-
-app.get("/missions", function (req, res) {
-    res.render("missions", { myAccount: userLogin });
-});
-
-app.get("/gallery", function (req, res) {
-    res.render("gallery", { myAccount: userLogin });
 });
 
 app.get("/logout", function (req, res) {

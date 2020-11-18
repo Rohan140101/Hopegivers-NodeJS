@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <!-- Bootstrap core CSS -->
+  <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!--external css-->
+  <link href="lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+  <!-- Custom styles for this template -->
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/style-responsive.css" rel="stylesheet">
+  <style type="text/css">
+  table td{
+    padding: 5px;
+  }
+  *{
+    font-family: 'Montserrat', sans-serif;
+  }
+</style>
+</head>
+<body>
+  <aside>
+      <div id="sidebar" class="nav-collapse ">
+        <!-- sidebar menu start-->
+        <ul class="sidebar-menu" id="nav-accordion">
+          <li class="mt">
+            <% if(flag == "adminPanel") {%>
+            <a class="active" href="adminPanel">
+            <% } else { %>
+            <a href="adminPanel">
+            <% } %>
+              <i class="fa fa-dashboard"></i>
+              <span>Dashboard</span>
+              </a>
+          </li>
+          <li class="sub-menu">
+            <a href="javascript:;" data-toggle="modal" data-target="#addMissionsModal">
+              <i class="fa fa-desktop"></i>
+              <span>Add Missions</span>
+              </a>
+          </li>
+          <li class="sub-menu">
+            <a href="javascript:;" data-toggle="modal" data-target="#addGalleryModal">
+              <i class="fa fa-cogs"></i>
+              <span>Add Gallery</span>
+              </a>
+          </li>
+          <li class="sub-menu">
+            <% if(flag == "todaysDonations") {%>
+            <a class="active" href="todaysDonations">
+            <% } else { %>
+            <a href="todaysDonations">
+            <% } %>
+              <i class="fa fa-book"></i>
+              <span>Today's Donations</span>
+              </a>
+          </li>
+          <li class="sub-menu">
+            <% if(flag == "checkUserQueries") {%>
+            <a class="active" href="checkUserQueries">
+            <% } else { %>
+            <a href="checkUserQueries">
+            <% } %>
+              <i class="fa fa-book"></i>
+              <span>Check User Queries</span>
+              </a>
+          </li>
+        </ul>
+        <!-- sidebar menu end-->
+      </div>
+    </aside>
+    <div class="modal fade" id="addMissionsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title" id="exampleModalLabel">Add Missions</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form action="/addMissions" method="post" enctype="multipart/form-data">
+              <table>
+                <tr>
+                  <td><label>Mission Title:</label></td>
+                  <td><input type="text" class="form-control ml-2" name="missionTitle" autocomplete="off"></td>
+                </tr>
+                <tr>
+                  <td>Mission Description:</td>
+                  <td><textarea rows="5" cols="30" name="missionDesc" class="form-control"></textarea></td>
+                </tr>
+                <tr>
+                  <td>Upload Image:</td>
+                  <td><input type="file" name="image"></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Submit</button></td>
+              </table>
+              
+            </form>
+          </div>
+          <div class="modal-footer">
+            
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <div class="modal fade" id="addGalleryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title" id="exampleModalLabel">Add Gallery</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form action="/addGallery" method="post" enctype="multipart/form-data">
+              <table>
+                  <td>Upload Image:</td>
+                  <td><input type="file" name="image"></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Submit</button></td>
+              </table>
+              
+            </form>
+          </div>
+          <div class="modal-footer">
+            
+          </div>
+        </div>
+      </div>
+  </div>
+
+</body>
+
+</html>
