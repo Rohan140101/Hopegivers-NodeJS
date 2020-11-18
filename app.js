@@ -208,6 +208,7 @@ app.get('/donations', function (req, res) {
     }
 });
 
+
 app.post('/donateMoney', async (req, res, next) => {
     // TO ADD: data validation, storing errors in an `errors` variable!
     // const name = req.body.name;
