@@ -183,7 +183,7 @@ app.get('/donations', function (req, res) {
     }
 });
 
-app.post('/donations', async (req, res, next) => {
+app.post('/donateMoney', async (req, res, next) => {
     // TO ADD: data validation, storing errors in an `errors` variable!
     // const name = req.body.name;
     // const email = req.body.email;
@@ -271,7 +271,37 @@ app.post('/donateClothes', function (req, res) {
             res.redirect('/');
         }
     });
-})
+});
+
+
+app.get("/check-past-history", function (req, res) {
+    // userLogin = req.cookies.userLogin;
+    if (userLogin) {
+        MoneyDonate.find({ email: userLogin }, function (err, foundMoneyHistory) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                ClothDonate.find({ email: userLogin }, function (err, foundClothHistory) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    else {
+                        var history = foundMoneyHistory.concat(foundClothHistory);
+                        // console.log(history);
+                        res.render("past-history", { history: history, myAccount: userLogin });
+
+                    }
+                })
+
+            }
+        })
+    }
+    else {
+        res.redirect('/login');
+    }
+});
+
 
 app.post("/forget-pass", function (req, res) {
 
@@ -314,7 +344,6 @@ app.post("/forget-pass", function (req, res) {
 });
 
 
-
 app.get("/new-pass/:random", function (req, res) {
     let random_forgot_pass = req.params.random;
     // console.log(obj);
@@ -350,36 +379,6 @@ app.post("/new-pass", function (req, res) {
 
 })
 
-
-// Past-History Route
-
-app.get("/check-past-history", function (req, res) {
-    if (userLogin) {
-        MoneyDonate.find({ email: userLogin }, function (err, foundMoneyHistory) {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                ClothDonate.find({ email: userLogin }, function (err, foundClothHistory) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    else {
-                        var history = foundMoneyHistory.concat(foundClothHistory);
-                        // console.log(history);
-                        res.render("past-history", { history: history, myAccount: userLogin });
-
-                    }
-                })
-
-            }
-        })
-    }
-    else {
-        res.redirect('/login');
-    }
-
-});
 
 app.get("/home", function (req, res) {
     res.redirect("/");
