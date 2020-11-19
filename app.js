@@ -365,26 +365,40 @@ app.get("/new-pass/:random", function (req, res) {
     let random_forgot_pass = req.params.random;
     // console.log(obj);
     if (obj.random_no == random_forgot_pass) {
-        console.log(random);
-        res.redirect("/new-pass");
+        res.redirect('/new-pass-page');
     }
     else {
         res.redirect("/");
     }
 })
 
+app.get("/new-pass-page", function (req, res) {
+    res.render('new-pass', { passwordSame: "" })
+})
+
 app.post("/new-pass", function (req, res) {
     let new_password = md5(req.body.password);
-    if (obj.email_id) {
-        User.updateOne({ email: obj.email_id }, { password: new_password }, function (err) {
-            if (err) {
-                console.log(err);
+    User.findOne({ email: obj.email_id }, function (err, foundUser) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            if (new_password == foundUser.password) {
+                res.render('new-pass', { passwordSame: "Your New Password and Old Password are Same. Please Enter A Different Password" })
             }
             else {
-                res.redirect('/login');
+                User.updateOne({ email: obj.email_id }, { password: new_password }, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    else {
+                        res.redirect('/login');
+                    }
+                })
+
             }
-        })
-    }
+        }
+    })
 });
 
 
